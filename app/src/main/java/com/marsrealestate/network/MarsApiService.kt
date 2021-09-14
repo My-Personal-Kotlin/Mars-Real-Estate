@@ -2,17 +2,18 @@ package com.marsrealestate.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Query
 
 private const val BASE_URL = "https://mars.udacity.com/"
 
 enum class MarsApiFilter(val value: String) {
     SHOW_RENT("rent"),
     SHOW_BUY("buy"),
-    SHOW_ALL("all") }
+    SHOW_ALL("all")
+}
 
 /**
  * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
@@ -27,26 +28,28 @@ private val moshi = Moshi.Builder()
  * object.
  */
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addConverterFactory(ScalarsConverterFactory.create())
     .baseUrl(BASE_URL)
     .build()
 
 /**
- * A public interface that exposes the [getProperties] method
+ * A public interface that exposes the API's method below
+ *  forexample :
+ *           1)   BASE_URL = https://mars.udacity.com/ + realestate
  */
 interface MarsApiService {
-    /**
-     * Returns a Coroutine [List] of [MarsProperty] which can be fetched with await() if in a Coroutine scope.
-     * The @GET annotation indicates that the "realestate" endpoint will be requested with the GET
-     * HTTP method
-     */
+
     @GET("realestate")
-    suspend fun getProperties(@Query("filter") type: String): List<MarsProperty>
+    fun getProperties(): Call<String>
+
 }
 
 /**
  * A public Api object that exposes the lazy-initialized Retrofit service
  */
 object MarsApi {
-    val retrofitService : MarsApiService by lazy { retrofit.create(MarsApiService::class.java) }
+    val retrofitService : MarsApiService by lazy {
+        // it tells retrofit to make urls for given BASE_URL
+        retrofit.create(MarsApiService::class.java)
+    }
 }

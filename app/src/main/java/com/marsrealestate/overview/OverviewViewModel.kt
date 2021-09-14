@@ -1,5 +1,6 @@
 package com.marsrealestate.overview
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,9 @@ import com.marsrealestate.network.MarsApi
 import com.marsrealestate.network.MarsApiFilter
 import com.marsrealestate.network.MarsProperty
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Response
+import javax.security.auth.callback.Callback
 
 
 enum class MarsApiStatus { LOADING, ERROR, DONE }
@@ -54,7 +58,18 @@ class OverviewViewModel : ViewModel() {
      * @param filter the [MarsApiFilter] that is sent as part of the web server request
      */
     private fun getMarsRealEstateProperties() {
+        MarsApi.retrofitService.getProperties().enqueue(object : retrofit2.Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _response.value = "Failure: " + t.message
+            }
+
+             override fun onResponse(call: Call<String>, response: Response<String>) {
+                _response.value = response.body()
+            }
+        })
+
         _response.value = "Set the Mars Api Response here !"
+
 //        viewModelScope.launch {
 //            _response.value = MarsApiStatus.LOADING
 //            try {
