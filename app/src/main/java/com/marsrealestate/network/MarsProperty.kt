@@ -10,13 +10,17 @@ import kotlinx.android.parcel.Parcelize
  * Deferred, which we await to get the result of the transaction.
  * @param filter the [MarsApiFilter] that is sent as part of the web server request
  */
-@Parcelize
+
 data class MarsProperty(
+
+    // Moshi Matches by Name Also but we can also give names
+    @Json(name = "id")
     val id: String,
-    // used to map img_src from the JSON to imgSrcUrl in our class
-    @Json(name = "img_src") val imgSrcUrl: String,
+    @Json(name = "img_src")
+    val imgSrcUrl: String,
+    @Json(name = "type")
     val type: String,
-    val price: Double) : Parcelable {
-    val isRental
-        get() = type == "rent"
-}
+    @Json(name = "price")
+    val price: Double
+
+)

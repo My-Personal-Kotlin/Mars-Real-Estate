@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.marsrealestate.network.MarsApi
 import com.marsrealestate.network.MarsApiFilter
 import com.marsrealestate.network.MarsProperty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
@@ -22,10 +25,11 @@ class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _response = MutableLiveData<String>()
-
-    // The external immutable LiveData for the request status
     val response: LiveData<String>
         get() = _response
+
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
 //    // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
 //    // with new values
@@ -58,15 +62,28 @@ class OverviewViewModel : ViewModel() {
      * @param filter the [MarsApiFilter] that is sent as part of the web server request
      */
     private fun getMarsRealEstateProperties() {
-        MarsApi.retrofitService.getProperties().enqueue(object : retrofit2.Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+//        MarsApi.retrofitService.getProperties().enqueue(object : retrofit2.Callback<List<MarsProperty>> {
+//            override fun onFailure(call: Call<List<MarsProperty>>, t: Throwable) {
+//                _response.value = "Failure: " + t.message
+//            }
+//
+//             override fun onResponse(call: Call<List<MarsProperty>>, response: Response<List<MarsProperty>>) {
+//                _response.value = "Success: ${response.body()?.get(0)} Mars Property rerived !"
+//            }
+//        })
+        coroutineScope.launch {
+            var getPropertiesDeffered = MarsApi.retrofitService.getProperties() // will run on
+            // background thread and returning the deffered
+            try {
+                var listResult = getPropertiesDeffered.await() // calling await() which will return
+                // the result when the value is ready
+                _response.value = "Success: ${listResult.size} Mars Property rerived !"
+            }catch (t:Throwable){
                 _response.value = "Failure: " + t.message
             }
 
-             override fun onResponse(call: Call<String>, response: Response<String>) {
-                _response.value = response.body()
-            }
-        })
+
+        }
 
         _response.value = "Set the Mars Api Response here !"
 
@@ -81,7 +98,12 @@ class OverviewViewModel : ViewModel() {
 //            }
 //        }
     }
-//
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
+    //
 //    /**
 //     */
 //
