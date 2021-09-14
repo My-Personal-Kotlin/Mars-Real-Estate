@@ -1,10 +1,8 @@
 package com.marsrealestate.overview
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.marsrealestate.network.MarsApi
 import com.marsrealestate.network.MarsApiFilter
 import com.marsrealestate.network.MarsProperty
@@ -12,9 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Response
-import javax.security.auth.callback.Callback
 
 
 enum class MarsApiStatus { LOADING, ERROR, DONE }
@@ -24,20 +19,20 @@ enum class MarsApiStatus { LOADING, ERROR, DONE }
 class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
-    private val _response = MutableLiveData<String>()
-    val response: LiveData<String>
-        get() = _response
+    private val _status = MutableLiveData<String>()
+    val status: LiveData<String>
+        get() = _status
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-//    // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
-//    // with new values
-//    private val _properties = MutableLiveData<List<MarsProperty>>()
-//
-//    // The external LiveData interface to the property is immutable, so only this class can modify
-//    val properties: LiveData<List<MarsProperty>>
-//        get() = _properties
+    // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
+    // with new values
+    private val _properties = MutableLiveData<MarsProperty>()
+
+    // The external LiveData interface to the property is immutable, so only this class can modify
+    val properties: LiveData<MarsProperty>
+        get() = _properties
 //
 //    // Internally, we use a MutableLiveData to handle navigation to the selected property
 //    private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
@@ -72,21 +67,19 @@ class OverviewViewModel : ViewModel() {
 //            }
 //        })
         coroutineScope.launch {
-            var getPropertiesDeffered = MarsApi.retrofitService.getProperties() // will run on
-            // background thread and returning the deffered
             try {
-                var listResult = getPropertiesDeffered.await() // calling await() which will return
-                // the result when the value is ready
-                _response.value = "Success: ${listResult.size} Mars Property rerived !"
+
+                var listResult = MarsApi.retrofitService.getProperties() // run on background thread
+
+                if(listResult.size > 0){
+                    _properties.value = listResult[0]
+                }
             }catch (t:Throwable){
-                _response.value = "Failure: " + t.message
+                _status.value = "Failure: " + t.message
             }
 
 
         }
-
-        _response.value = "Set the Mars Api Response here !"
-
 //        viewModelScope.launch {
 //            _response.value = MarsApiStatus.LOADING
 //            try {

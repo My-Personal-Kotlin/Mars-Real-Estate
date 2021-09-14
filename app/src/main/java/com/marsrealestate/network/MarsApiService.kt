@@ -33,7 +33,7 @@ private val retrofit = Retrofit.Builder()
 //    .addConverterFactory(ScalarsConverterFactory.create()) // For String Reading Data from API
     .addConverterFactory(MoshiConverterFactory.create(moshi)) // For Object Data Reading from API
     .addCallAdapterFactory(CoroutineCallAdapterFactory()) // ask Retrofit to produce a
-    // coroutine base API's with coroutine DEFFERED result
+    // coroutine base API's with buit in SUSPEND
     .baseUrl(BASE_URL)
     .build()
 
@@ -45,7 +45,7 @@ private val retrofit = Retrofit.Builder()
 interface MarsApiService {
     // API https://mars.udacity.com/realestate
     @GET("realestate")
-    fun getProperties(): Deferred<List<MarsProperty>> // Call<String> for ScalarsConverterFactory.create()
+    suspend fun getProperties(): List<MarsProperty> // Call<String> for ScalarsConverterFactory.create()
 
 }
 
