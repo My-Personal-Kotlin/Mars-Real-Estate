@@ -34,25 +34,22 @@ class OverviewFragment : Fragment() {
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
 
-        binding.photosGrid.adapter = PhotoGridAdapter()
+        binding.photosGrid.adapter = PhotoGridAdapter(PhotoGridAdapter.MyOnClickListener {
+            viewModel.displayPropertyDetails(it)
+        })
 
-//        // Sets the adapter of the photosGrid RecyclerView with clickHandler lambda that
-//        // tells the viewModel when our property is clicked
-//        binding.photosGrid.adapter = PhotoGridAdapter(PhotoGridAdapter.OnClickListener {
-//            viewModel.displayPropertyDetails(it)
-//        })
-//
-//        // Observe the navigateToSelectedProperty LiveData and Navigate when it isn't null
-//        // After navigating, call displayPropertyDetailsComplete() so that the ViewModel is ready
-//        // for another navigation event.
-//        viewModel.navigateToSelectedProperty.observe(viewLifecycleOwner, Observer {
-//            if ( null != it ) {
-//                // Must find the NavController from the Fragment
-//                findNavController().navigate(OverviewFragmentDirections.actionShowDetail(it))
-//                // Tell the ViewModel we've made the navigate call to prevent multiple navigation
-//                viewModel.displayPropertyDetailsComplete()
-//            }
-//        })
+
+        // Observe the navigateToSelectedProperty LiveData and Navigate when it isn't null
+        // After navigating, call displayPropertyDetailsComplete() so that the ViewModel is ready
+        // for another navigation event.
+        viewModel.navigateToSelectedProperty.observe(viewLifecycleOwner, Observer {
+            if ( null != it ) {
+                // Must find the NavController from the Fragment
+                findNavController().navigate(OverviewFragmentDirections.actionShowDetail(it))
+                // Tell the ViewModel we've made the navigate call to prevent multiple navigation
+                viewModel.displayPropertyDetailsComplete()
+            }
+        })
 
         setHasOptionsMenu(true)
         return binding.root
@@ -71,13 +68,13 @@ class OverviewFragment : Fragment() {
      * overflow menu.
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        viewModel.updateFilter(
-//            when (item.itemId) {
-//                R.id.show_rent_menu -> MarsApiFilter.SHOW_RENT
-//                R.id.show_buy_menu -> MarsApiFilter.SHOW_BUY
-//                else -> MarsApiFilter.SHOW_ALL
-//            }
-//        )
+        viewModel.updateFilter(
+            when (item.itemId) {
+                R.id.show_rent_menu -> MarsApiFilter.SHOW_RENT
+                R.id.show_buy_menu -> MarsApiFilter.SHOW_BUY
+                else -> MarsApiFilter.SHOW_ALL
+            }
+        )
         return true
     }
 }

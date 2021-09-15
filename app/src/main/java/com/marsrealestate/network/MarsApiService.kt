@@ -8,6 +8,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 private const val BASE_URL = "https://mars.udacity.com/"
 
@@ -41,9 +42,14 @@ private val retrofit = Retrofit.Builder()
  * A public interface that exposes the API's Mapped method below
  */
 interface MarsApiService {
+//
+//    1) Without Query Parameter
+//    @GET("realestate") // API https://mars.udacity.com/realestate
+//    suspend fun getProperties(): List<MarsProperty> // Call<String> for ScalarsConverterFactory.create()
 
-    @GET("realestate") // API https://mars.udacity.com/realestate
-    suspend fun getProperties(): List<MarsProperty> // Call<String> for ScalarsConverterFactory.create()
+//    2) With Query Parameter
+    @GET("realestate") // API https://mars.udacity.com/realestate?filter=
+    suspend fun getProperties(@Query("filter") type :String): List<MarsProperty> // Call<String> for ScalarsConverterFactory.create()
 
 }
 

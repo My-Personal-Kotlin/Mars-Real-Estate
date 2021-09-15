@@ -24,4 +24,7 @@ data class MarsProperty(
     @Json(name = "price")
     val price: Double
 
-)   :   Parcelable
+)   :   Parcelable {
+    val isRental
+        get() = type == "rent"
+}

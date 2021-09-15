@@ -31,21 +31,19 @@ class OverviewViewModel : ViewModel() {
     private val _properties = MutableLiveData<List<MarsProperty>>()
     val properties: LiveData<List<MarsProperty>>
         get() = _properties
-//
-//    // Internally, we use a MutableLiveData to handle navigation to the selected property
-//    private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
-//
-//    // The external immutable LiveData for the navigation property
-//    val navigateToSelectedProperty: LiveData<MarsProperty>
-//        get() = _navigateToSelectedProperty
-//
+
+    // Internally, we use a MutableLiveData to handle navigation to the selected property
+    private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
+    val navigateToSelectedProperty: LiveData<MarsProperty>
+        get() = _navigateToSelectedProperty
+
 
 
     /**
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
     init {
-        getMarsRealEstateProperties()
+        getMarsRealEstateProperties(MarsApiFilter.SHOW_ALL)
     }
 
     /**
@@ -54,7 +52,7 @@ class OverviewViewModel : ViewModel() {
      * returns a coroutine Deferred, which we await to get the result of the transaction.
      * @param filter the [MarsApiFilter] that is sent as part of the web server request
      */
-    private fun getMarsRealEstateProperties() {
+    private fun getMarsRealEstateProperties(filter: MarsApiFilter) {
 //        MarsApi.retrofitService.getProperties().enqueue(object : retrofit2.Callback<List<MarsProperty>> {
 //            override fun onFailure(call: Call<List<MarsProperty>>, t: Throwable) {
 //                _response.value = "Failure: " + t.message
@@ -67,7 +65,8 @@ class OverviewViewModel : ViewModel() {
         coroutineScope.launch {
             _status.value = MarsApiStatus.LOADING
             try {
-                var listResult = MarsApi.retrofitService.getProperties() // run on background thread
+                // Default API  = https://mars.udacity.com/realestate?filter=all
+                var listResult = MarsApi.retrofitService.getProperties(filter.value) // run on background thread
                 _status.value = MarsApiStatus.DONE
                 if(listResult.size > 0){
                     _properties.value = listResult
@@ -95,31 +94,28 @@ class OverviewViewModel : ViewModel() {
         super.onCleared()
         viewModelJob.cancel()
     }
-    //
-//    /**
-//     */
-//
-//    /**
-//     * When the property is clicked, set the [_navigateToSelectedProperty] [MutableLiveData]
-//     * @param marsProperty The [MarsProperty] that was clicked on.
-//     */
-//    fun displayPropertyDetails(marsProperty: MarsProperty) {
-//        _navigateToSelectedProperty.value = marsProperty
-//    }
-//
-//    /**
-//     * After the navigation has taken place, make sure navigateToSelectedProperty is set to null
-//     */
-//    fun displayPropertyDetailsComplete() {
-//        _navigateToSelectedProperty.value = null
-//    }
+
+    /**
+     * When the property is clicked, set the [_navigateToSelectedProperty] [MutableLiveData]
+     * @param marsProperty The [MarsProperty] that was clicked on.
+     */
+    fun displayPropertyDetails(marsProperty: MarsProperty) {
+        _navigateToSelectedProperty.value = marsProperty
+    }
+
+    /**
+     * After the navigation has taken place, make sure navigateToSelectedProperty is set to null
+     */
+    fun displayPropertyDetailsComplete() {
+        _navigateToSelectedProperty.value = null
+    }
 
     /**
      * Updates the data set filter for the web services by querying the data with the new filter
      * by calling [getMarsRealEstateProperties]
      * @param filter the [MarsApiFilter] that is sent as part of the web server request
-//     */
-//    fun updateFilter(filter: MarsApiFilter) {
-//        getMarsRealEstateProperties(filter)
-//    }
+     */
+    fun updateFilter(filter: MarsApiFilter) {
+        getMarsRealEstateProperties(filter)
+    }
 }
