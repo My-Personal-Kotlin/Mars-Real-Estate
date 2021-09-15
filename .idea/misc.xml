@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_broken_image.xml" value="0.17592592592592593" />
+        <entry key="app/src/main/res/drawable/ic_connection_error.xml" value="0.184375" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.17592592592592593" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.13518518518518519" />
         <entry key="app/src/main/res/layout/fragment_detail.xml" value="0.12047101449275362" />

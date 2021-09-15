@@ -13,14 +13,31 @@ import com.marsrealestate.network.MarsProperty
  * data, including computing diffs between lists.
  * @param onClick a lambda that takes the
  */
-class PhotoGridAdapter( val onClickListener: OnClickListener ) :
-    ListAdapter<MarsProperty, PhotoGridAdapter.MarsPropertyViewHolder>(DiffCallback) {
+class PhotoGridAdapter: ListAdapter<MarsProperty, PhotoGridAdapter.MarsPropertyViewHolder>(DiffCallback) {
+
+    /**
+     * Create new [RecyclerView] item views (invoked by the layout manager)
+     */
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarsPropertyViewHolder {
+        return MarsPropertyViewHolder(GridViewItemBinding.inflate(LayoutInflater.from(parent.context)))
+    }
+
+    /**
+     * Replaces the contents of a view (invoked by the layout manager)
+     */
+    override fun onBindViewHolder(holder: MarsPropertyViewHolder, position: Int) {
+        val marsProperty = getItem(position)
+//        holder.itemView.setOnClickListener {
+//            onClickListener.onClick(marsProperty)
+//        }
+        holder.bind(marsProperty)
+    }
+
     /**
      * The MarsPropertyViewHolder constructor takes the binding variable from the associated
      * GridViewItem, which nicely gives it access to the full [MarsProperty] information.
      */
-    class MarsPropertyViewHolder(private var binding: GridViewItemBinding):
-        RecyclerView.ViewHolder(binding.root) {
+    class MarsPropertyViewHolder(private var binding: GridViewItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(marsProperty: MarsProperty) {
             binding.property = marsProperty
             // This is important, because it forces the data binding to execute immediately,
@@ -44,25 +61,6 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
     }
 
     /**
-     * Create new [RecyclerView] item views (invoked by the layout manager)
-     */
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MarsPropertyViewHolder {
-        return MarsPropertyViewHolder(GridViewItemBinding.inflate(LayoutInflater.from(parent.context)))
-    }
-
-    /**
-     * Replaces the contents of a view (invoked by the layout manager)
-     */
-    override fun onBindViewHolder(holder: MarsPropertyViewHolder, position: Int) {
-        val marsProperty = getItem(position)
-        holder.itemView.setOnClickListener {
-            onClickListener.onClick(marsProperty)
-        }
-        holder.bind(marsProperty)
-    }
-
-    /**
      * Custom listener that handles clicks on [RecyclerView] items.  Passes the [MarsProperty]
      * associated with the current item to the [onClick] function.
      * @param clickListener lambda that will be called with the current [MarsProperty]
@@ -70,4 +68,5 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
     class OnClickListener(val clickListener: (marsProperty:MarsProperty) -> Unit) {
         fun onClick(marsProperty:MarsProperty) = clickListener(marsProperty)
     }
+
 }

@@ -1,5 +1,6 @@
 package com.marsrealestate.network
 
+import android.os.Parcel
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
@@ -10,17 +11,17 @@ import kotlinx.android.parcel.Parcelize
  * Deferred, which we await to get the result of the transaction.
  * @param filter the [MarsApiFilter] that is sent as part of the web server request
  */
-
+@Parcelize
 data class MarsProperty(
 
     // Moshi Matches by Name Also but we can also give names
     @Json(name = "id")
-    val id: String,
+    val id: String?,
     @Json(name = "img_src")
-    val imgSrcUrl: String,
+    val imgSrcUrl: String?,
     @Json(name = "type")
-    val type: String,
+    val type: String?,
     @Json(name = "price")
     val price: Double
 
-)
+)   :   Parcelable

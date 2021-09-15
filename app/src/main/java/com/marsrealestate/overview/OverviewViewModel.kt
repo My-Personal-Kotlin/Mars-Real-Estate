@@ -19,8 +19,8 @@ enum class MarsApiStatus { LOADING, ERROR, DONE }
 class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
-    private val _status = MutableLiveData<String>()
-    val status: LiveData<String>
+    private val _status = MutableLiveData<MarsApiStatus>()
+    val status: LiveData<MarsApiStatus>
         get() = _status
 
     private var viewModelJob = Job()
@@ -28,10 +28,8 @@ class OverviewViewModel : ViewModel() {
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
     // with new values
-    private val _properties = MutableLiveData<MarsProperty>()
-
-    // The external LiveData interface to the property is immutable, so only this class can modify
-    val properties: LiveData<MarsProperty>
+    private val _properties = MutableLiveData<List<MarsProperty>>()
+    val properties: LiveData<List<MarsProperty>>
         get() = _properties
 //
 //    // Internally, we use a MutableLiveData to handle navigation to the selected property
@@ -67,15 +65,16 @@ class OverviewViewModel : ViewModel() {
 //            }
 //        })
         coroutineScope.launch {
+            _status.value = MarsApiStatus.LOADING
             try {
-
                 var listResult = MarsApi.retrofitService.getProperties() // run on background thread
-
+                _status.value = MarsApiStatus.DONE
                 if(listResult.size > 0){
-                    _properties.value = listResult[0]
+                    _properties.value = listResult
                 }
             }catch (t:Throwable){
-                _status.value = "Failure: " + t.message
+                _status.value = MarsApiStatus.ERROR
+                _properties.value = ArrayList()
             }
 
 

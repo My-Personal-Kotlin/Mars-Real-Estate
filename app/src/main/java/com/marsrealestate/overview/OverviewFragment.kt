@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.marsrealestate.R
 import com.marsrealestate.databinding.FragmentOverviewBinding
+import com.marsrealestate.databinding.GridViewItemBinding
 import com.marsrealestate.network.MarsApiFilter
 
 class OverviewFragment : Fragment() {
@@ -18,7 +19,6 @@ class OverviewFragment : Fragment() {
         ViewModelProvider(this).get(OverviewViewModel::class.java)
     }
 
-    private lateinit var a:String
     /**
      * Inflates the layout with Data Binding, sets its lifecycle owner to the OverviewFragment
      * to enable Data Binding to observe LiveData, and sets up the RecyclerView with an adapter.
@@ -27,11 +27,14 @@ class OverviewFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val binding = FragmentOverviewBinding.inflate(inflater)
 
+
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
         binding.lifecycleOwner = this
 
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
+
+        binding.photosGrid.adapter = PhotoGridAdapter()
 
 //        // Sets the adapter of the photosGrid RecyclerView with clickHandler lambda that
 //        // tells the viewModel when our property is clicked

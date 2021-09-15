@@ -38,13 +38,11 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 /**
- * A public interface that exposes the API's method below
- *  forexample :
- *           1)   BASE_URL = https://mars.udacity.com/ + realestate
+ * A public interface that exposes the API's Mapped method below
  */
 interface MarsApiService {
-    // API https://mars.udacity.com/realestate
-    @GET("realestate")
+
+    @GET("realestate") // API https://mars.udacity.com/realestate
     suspend fun getProperties(): List<MarsProperty> // Call<String> for ScalarsConverterFactory.create()
 
 }
